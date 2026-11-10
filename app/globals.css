@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-accent: var(--font-space-grotesk);
+
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-elevated: var(--paper-elevated);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-tertiary: var(--accent-tertiary);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+}
+
+:root {
+  /* Light — Colorful Paper */
+  --paper: #FFF5E8;
+  --paper-raised: #FFFCF4;
+  --paper-elevated: #F7EBD8;
+  --ink: #292522;
+  --ink-soft: #5C544E;
+  --ink-muted: #8A7F75;
+  --accent-primary: #F3D36A;
+  --accent-secondary: #9DBD91;
+  --accent-tertiary: #C5A0D5;
+  --border: #292522;
+  --border-soft: rgba(41, 37, 34, 0.14);
+}
+
+.dark {
+  /* Dark — Warm Charcoal */
+  --paper: #141110;
+  --paper-raised: #211A18;
+  --paper-elevated: #342420;
+  --ink: #F2E5D8;
+  --ink-soft: #C4B4A6;
+  --ink-muted: #887867;
+  --accent-primary: #D69B54;
+  --accent-secondary: #BF7893;
+  --accent-tertiary: #D69B54;
+  --border: #3A2A24;
+  --border-soft: rgba(242, 229, 216, 0.1);
+}
+
+html {
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+::selection {
+  background-color: var(--accent-primary);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+/* Sharp, pixelated scanlines */
+.scanlines {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.4)
+  );
+  background-size: 100% 4px;
+}
+
+/* Ensure 3D works flawlessly */
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+/* --- PIXEL POKEDEX STYLES --- */
+
+@keyframes roll {
+  to { background-position: 0 96px; }
+}
+@keyframes drift {
+  from { transform: translateX(-140px); }
+  to { transform: translateX(calc(100vw + 140px)); }
+}
+@keyframes lens {
+  50% { filter: brightness(1.4); }
+}
+@keyframes rise {
+  from { transform: translateY(105vh) rotate(-10deg); }
+  60% { transform: translateY(-26px) rotate(3deg); }
+  80% { transform: translateY(8px) rotate(-1deg); }
+  to { transform: translateY(0) rotate(0deg); }
+}
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(8deg); }
+}
+@keyframes shake {
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@keyframes fill {
+  to { width: 100%; }
+}
+@keyframes type {
+  to { width: 100%; }
+}
+@keyframes pop {
+  from { transform: scale(0); }
+}
+
+.pixel-shadow {
+  box-shadow: 
+    inset 4px 4px 0 var(--red-l),
+    inset -4px -4px 0 var(--red-d),
+    -4px 0 var(--ink), 4px 0 var(--ink),
+    0 -4px var(--ink), 0 4px var(--ink),
+    4px 4px 0 var(--ex), 8px 8px 0 var(--ex),
+    12px 12px 0 var(--ex);
+}
+
+.pixel-btn-shadow {
+  box-shadow: 
+    inset 4px 4px 0 var(--l),
+    inset -4px -4px 0 var(--d),
+    -4px 0 var(--ink), 4px 0 var(--ink),
+    0 -4px var(--ink), 0 var(--e) 0 0 var(--d),
+    -4px var(--e) 0 var(--ink), 4px var(--e) 0 var(--ink),
+    0 calc(var(--e) + 4px) 0 var(--ink);
+}
+
+.pixel-btn-shadow:active {
+  --e: 2px;
+  transform: translateY(6px);
+}
+
+.crt-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.32) 2px 4px);
+}
+
+.retro-tab-selected {
+  background: #9dffb0 !important;
+  color: #04210d !important;
+  box-shadow: none !important;
+}

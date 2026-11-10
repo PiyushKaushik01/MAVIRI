@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Temporary Maviri logo placeholder — replace when the final mark is ready -->
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="#F3D36A" stroke="#292522" stroke-width="3"/>
+  <path d="M18 44 L24 22 L32 34 L40 22 L46 44" stroke="#292522" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
