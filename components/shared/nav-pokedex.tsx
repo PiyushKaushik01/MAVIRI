@@ -68,6 +68,7 @@ export function NavPokedex({ onOpenAuth }: NavPokedexProps) {
     setVeilOpen(true);
     await wait(650);
     setOpen(true);
+    window.dispatchEvent(new CustomEvent("maviri:dex-open", { detail: true }));
     await wait(900);
     closeRef.current?.focus();
     transitioningRef.current = false;
@@ -77,6 +78,7 @@ export function NavPokedex({ onOpenAuth }: NavPokedexProps) {
     if (transitioningRef.current || !open) return;
     transitioningRef.current = true;
     setOpen(false);
+    window.dispatchEvent(new CustomEvent("maviri:dex-open", { detail: false }));
     await wait(900);
     setLifted(false);
     setVeilOpen(false);
@@ -204,11 +206,11 @@ export function NavPokedex({ onOpenAuth }: NavPokedexProps) {
                     <Link href="/discover" onClick={closeAfterNavigation} className="navdex-menu-link">
                       <span>DISCOVER</span><span aria-hidden="true">›</span>
                     </Link>
+                    <Link href="/profile" onClick={closeAfterNavigation} className="navdex-menu-link">
+                      <span>{user ? "MY PROFILE" : "PROFILE"}</span><span aria-hidden="true">›</span>
+                    </Link>
                     <div className="navdex-menu-link is-locked" aria-disabled="true">
                       <span>COMMUNITY</span><small>SOON</small>
-                    </div>
-                    <div className="navdex-menu-link is-locked" aria-disabled="true">
-                      <span>LIBRARY</span><small>SOON</small>
                     </div>
                     {user ? (
                       <button type="button" className="navdex-menu-link navdex-action" onClick={handleSignOut} disabled={signingOut}>

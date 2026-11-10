@@ -43,13 +43,13 @@ export function AnimeVibePicker({ anime }: { anime: VibeAnime[] }) {
         <span className="home-vibe-kicker"><Sparkles size={13} /> THE ANIME CORNER</span>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-ink/70">A little scroll, a new obsession</p>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-ink/70">Change the frequency</p>
             <h2 id="home-vibe-title" className="mt-1 text-2xl font-black tracking-tight text-ink sm:text-3xl">
-              Pick a vibe. Meet a show.
+              Let curiosity drive.
             </h2>
           </div>
           <p className="max-w-sm text-sm font-medium leading-relaxed text-ink/75">
-            Browse real seasonal and trending anime, then see what catches your eye. Save it to your shelf and bring the episode talk back to Maviri.
+            Follow a genre, find an unexpected favorite, and wander between the worlds currently catching attention.
           </p>
         </div>
         <div className="home-vibe-genre" role="group" aria-label="Filter anime by genre">

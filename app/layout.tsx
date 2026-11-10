@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Space_Grotesk, Press_Start_2P } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PublicNav } from "@/components/shared/public-nav";
-import { PlayfulMasthead } from "@/components/shared/playful-masthead";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,7 +23,7 @@ const pressStart = Press_Start_2P({
 export const metadata: Metadata = {
   title: "Maviri — Anime, together.",
   description:
-    "Discover anime, build your library, and talk about what you love. Maviri is an anime social platform built for fans.",
+    "Discover anime, keep the details you care about, and talk about what you love. Maviri is an anime social platform built for fans.",
 };
 
 export default function RootLayout({
@@ -38,7 +37,6 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <PublicNav />
-          <PlayfulMasthead />
           {children}
         </ThemeProvider>
       </body>
