@@ -1,29 +1,27 @@
 export function HeroSkeleton() {
   return (
-    <section className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-12 lg:gap-6">
-      <div className="md:col-span-5">
-        <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border-soft bg-paper-raised">
-          <div className="aspect-[3/4] animate-pulse bg-paper-elevated" />
-          <div className="space-y-2 p-4">
-            <div className="h-3 w-24 animate-pulse rounded bg-paper-elevated" />
-            <div className="h-6 w-2/3 animate-pulse rounded bg-paper-elevated" />
-            <div className="h-3 w-1/2 animate-pulse rounded bg-paper-elevated" />
-          </div>
+    <section className="mt-8 grid grid-cols-1 gap-6 md:mt-10 md:grid-cols-12 lg:gap-8" aria-label="Loading anime picks">
+      <div className="flex flex-col gap-5 md:col-span-4">
+        <div className="space-y-3 py-2">
+          <div className="h-3 w-40 animate-pulse rounded-full bg-paper-elevated" />
+          <div className="h-10 w-4/5 animate-pulse rounded-lg bg-paper-elevated" />
+          <div className="h-4 w-full animate-pulse rounded-full bg-paper-elevated" />
+          <div className="h-4 w-3/4 animate-pulse rounded-full bg-paper-elevated" />
         </div>
+        <div className="aspect-[3/4] w-full animate-pulse overflow-hidden rounded-[22px] bg-paper-elevated" />
       </div>
-      <div className="md:col-span-3">
-        <div className="mb-2 h-3 w-24 animate-pulse rounded bg-paper-elevated" />
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-1">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="aspect-[3/4] animate-pulse rounded-xl bg-paper-elevated"
-            />
-          ))}
+
+      <div className="flex flex-col gap-5 md:col-span-8">
+        <div className="space-y-4 rounded-[22px] border border-border-soft bg-paper-raised p-4 sm:p-5">
+          <div className="h-9 w-40 animate-pulse rounded-full bg-paper-elevated" />
+          <div className="aspect-[16/9] w-full animate-pulse rounded-2xl bg-paper-elevated" />
+          <div className="h-4 w-2/3 animate-pulse rounded-full bg-paper-elevated" />
         </div>
-      </div>
-      <div className="md:col-span-4">
-        <div className="h-[420px] animate-pulse rounded-2xl bg-paper-elevated" />
+        <div className="space-y-3 rounded-[22px] border border-border-soft bg-paper-raised p-5 sm:p-6">
+          <div className="h-3 w-36 animate-pulse rounded-full bg-paper-elevated" />
+          <div className="h-7 w-4/5 animate-pulse rounded-lg bg-paper-elevated" />
+          <div className="h-14 animate-pulse rounded-xl bg-paper-elevated" />
+        </div>
       </div>
     </section>
   );

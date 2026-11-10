@@ -124,3 +124,23 @@ export async function fetchTrendingAnime(limit = 8): Promise<AnimeMedia[]> {
   });
   return data.Page.media;
 }
+
+export async function searchAnime(query: string, limit = 24): Promise<AnimeMedia[]> {
+  const search = query.trim();
+  if (!search) return [];
+
+  const queryText = `
+    query SearchAnime($search: String, $perPage: Int) {
+      Page(page: 1, perPage: $perPage) {
+        media(search: $search, type: ANIME, sort: SEARCH_MATCH) {
+          ${MEDIA_FRAGMENT}
+        }
+      }
+    }
+  `;
+  const data = await anilistQuery<{ Page: { media: AnimeMedia[] } }>(queryText, {
+    search,
+    perPage: limit,
+  });
+  return data.Page.media;
+}

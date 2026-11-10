@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -24,26 +24,36 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [errorMsg, setErrorMsg] = useState("AWAITING INPUT_");
+  const [trainerId, setTrainerId] = useState<number | null>(null);
 
   // 3D Tilt & Scale refs
   const tiltRef = useRef<HTMLDivElement>(null);
   const rigRef = useRef<HTMLDivElement>(null);
 
-  // Initialize open sequence
+  // Initialize the opening sequence and clear its timers if the Dex closes early.
   useEffect(() => {
-    if (open) {
-      setTimeout(() => setIsOpen(true), 300);
-      setTimeout(() => setBootState("form"), 2600); // Boot sequence length
-    } else {
-      setIsOpen(false);
-      setBootState("boot");
-      setAuthMode("signup");
-      setName("");
-      setEmail("");
-      setPass("");
-      setErrorMsg("AWAITING INPUT_");
-    }
+    if (!open) return;
+
+    const foldTimer = window.setTimeout(() => setIsOpen(true), 300);
+    const bootTimer = window.setTimeout(() => setBootState("form"), 2600);
+    return () => {
+      window.clearTimeout(foldTimer);
+      window.clearTimeout(bootTimer);
+    };
   }, [open]);
+
+  const closePokedex = () => {
+    setIsOpen(false);
+    setBootState("boot");
+    setAuthMode("signup");
+    setShowPass(false);
+    setName("");
+    setEmail("");
+    setPass("");
+    setErrorMsg("AWAITING INPUT_");
+    setTrainerId(null);
+    onClose();
+  };
 
   // Handle 3D tilt on mouse move
   useEffect(() => {
@@ -67,8 +77,8 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
   useEffect(() => {
     const handleResize = () => {
       if (!rigRef.current) return;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = document.documentElement.clientWidth;
+      const h = window.visualViewport?.height ?? window.innerHeight;
       const narrow = w < 760;
 
       const targetW = narrow ? 364 : 700;
@@ -81,7 +91,11 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.visualViewport?.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
   }, [open]);
 
   const switchMode = (m: "signup" | "login") => {
@@ -124,16 +138,18 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
         // If they signed up, show a different success message
         if (isSignup) {
           setErrorMsg("CHECK YOUR EMAIL TO VERIFY!");
+        } else {
+          setTrainerId(Math.floor(Math.random() * 9000 + 1000));
         }
       }
-    } catch (err) {
+    } catch {
       setErrorMsg("NETWORK ERROR");
       setBootState("err");
     }
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog.Root open={open} onOpenChange={(o) => !o && closePokedex()}>
       <Dialog.Portal>
         <Dialog.Overlay className={cn(
           "fixed inset-0 z-50 bg-[#050516]/75 backdrop-blur-[2px] transition-opacity duration-300",
@@ -147,7 +163,9 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
           )}
           aria-describedby={undefined}
         >
-          <Dialog.Title className="sr-only">Maviri Account Login</Dialog.Title>
+          <Dialog.Title className="sr-only">
+            {mode === "auth" ? "Maviri Account Login" : "Maviri"}
+          </Dialog.Title>
 
           {/* Main Rig */}
           <div
@@ -206,7 +224,7 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
 
                     {/* Close Button */}
                     <button
-                      onClick={onClose}
+                      onClick={closePokedex}
                       className="absolute top-5 left-5 w-8 h-8 bg-[#2b2b2b] text-white text-[10px] pixel-btn-shadow flex items-center justify-center z-20"
                       style={{ "--c": "#2b2b2b", "--l": "#666", "--d": "#000", "--e": "4px" } as React.CSSProperties}
                     >
@@ -304,22 +322,20 @@ export function Pokedex({ open, onClose, mode = "auth" }: PokedexProps) {
                           <svg className="w-16 h-12 fill-[#9dffb0] animate-[pop_0.5s_steps(4)_both]" viewBox="0 0 8 6">
                             <path d="M6 0h2v1H6zM5 1h2v1H5zM0 2h1v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h2v1H3zM1 4h3v1H1zM2 5h1v1H2z" />
                           </svg>
-                          // components/pokedex/pokedex.tsx (inside the Success Screen div)
-
                           <h2 className="text-[9px] text-[#ffd966] font-normal mt-3 leading-[1.8]">
                             {authMode === "signup" ? "CHECK YOUR EMAIL" : "WELCOME BACK!"}
                           </h2>
                           <p className="text-[7px] mt-3 px-2 text-center leading-relaxed">
                             {authMode === "signup"
                               ? "A VERIFICATION LINK HAS BEEN SENT TO YOUR INBOX."
-                              : "TRAINER ID #" + Math.floor(Math.random() * 9000 + 1000)}
+                              : `TRAINER ID #${trainerId ?? "----"}`}
                           </p>
                           <p className="text-[7px] mt-1">
                             {authMode === "signup" ? "CLICK IT TO ACTIVATE YOUR DEX." : "DEX SYNCED. SAFE TRAVELS!"}
                           </p>
                           <button
                             type="button"
-                            onClick={onClose}
+                            onClick={closePokedex}
                             className="mt-4 px-2.5 py-2 text-[7px] bg-[#9dffb0] text-[#04210d]"
                           >
                             CLOSE DEX

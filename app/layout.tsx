@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Space_Grotesk, Press_Start_2P } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PublicNav } from "@/components/shared/public-nav";
+import { PlayfulMasthead } from "@/components/shared/playful-masthead";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,8 +34,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${spaceGrotesk.variable} ${pressStart.variable} antialiased`}
+        suppressHydrationWarning
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <PublicNav />
+          <PlayfulMasthead />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

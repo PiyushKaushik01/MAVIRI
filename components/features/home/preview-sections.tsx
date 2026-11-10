@@ -1,100 +1,109 @@
 import Image from "next/image";
-import { Play, CheckCircle2, Clock } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2, Clock3 } from "lucide-react";
+import { getFeaturedPayload } from "@/lib/anime-service";
+import type { AnimeMedia } from "@/lib/anilist";
 
-export function PreviewSections() {
+export async function PreviewSections() {
+  let shelfPicks: AnimeMedia[] = [];
+  let conversationPicks: AnimeMedia[] = [];
+
+  try {
+    const payload = await getFeaturedPayload();
+    shelfPicks = payload.seasonal.slice(0, 3);
+    conversationPicks = payload.trending.slice(1, 5);
+  } catch (error) {
+    console.error("[PreviewSections] AniList fetch failed:", error);
+  }
+
   return (
-    <div className="mt-24 flex flex-col gap-16">
-      
-      {/* Section 1: Library Preview */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
-        <div className="order-2 md:order-1">
-          <h2 className="text-2xl font-black uppercase tracking-tight text-ink mb-3">Your Personal Shelf</h2>
-          <p className="text-sm font-medium text-ink-soft mb-6 leading-relaxed">
-            Stop using messy spreadsheets. Maviri automatically organizes your watching, completed, and planned anime into a beautiful, visual collection. Update your progress in one click.
+    <div className="mt-20 flex flex-col gap-20 sm:mt-28 sm:gap-28">
+      <section className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16" aria-labelledby="shelf-preview-title">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-muted">A shelf that remembers</p>
+          <h2 id="shelf-preview-title" className="mt-3 max-w-lg text-3xl font-black tracking-tight text-ink sm:text-4xl">
+            Your anime journey, all in one place.
+          </h2>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-ink-soft sm:text-base">
+            Keep the series you are watching close, mark the ones you have finished, and pick up right where you left off.
           </p>
-          <ul className="flex flex-col gap-3">
-            <li className="flex items-center gap-2 text-sm font-bold text-ink">
-              <CheckCircle2 className="h-5 w-5 text-accent-secondary" /> Track episodes & rewatches
-            </li>
-            <li className="flex items-center gap-2 text-sm font-bold text-ink">
-              <CheckCircle2 className="h-5 w-5 text-accent-secondary" /> Rate & review titles
-            </li>
-            <li className="flex items-center gap-2 text-sm font-bold text-ink">
-              <CheckCircle2 className="h-5 w-5 text-accent-secondary" /> Quick-edit via Pokédex popup
-            </li>
+          <ul className="mt-6 flex flex-col gap-3">
+            {["Episode progress and rewatches", "Ratings and personal notes", "A clear place for your next watch"].map((item) => (
+              <li key={item} className="flex items-center gap-3 text-sm font-semibold text-ink">
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-secondary" /> {item}
+              </li>
+            ))}
           </ul>
         </div>
-        
-        {/* Visual UI Preview */}
-        <div className="order-1 md:order-2 rounded-2xl border-2 border-ink bg-paper-raised p-5 shadow-[6px_6px_0_0_var(--ink)]">
-           <div className="flex items-center justify-between border-b-2 border-ink pb-3 mb-4">
-             <span className="text-xs font-black uppercase tracking-widest">Currently Watching</span>
-             <span className="text-xs font-bold bg-accent-primary px-2 py-0.5 rounded-md border border-ink">3 Active</span>
-           </div>
-           
-           <div className="flex flex-col gap-4">
-             {/* Mock Entry 1 */}
-             <div className="flex gap-4 items-center">
-               <div className="h-16 w-12 shrink-0 rounded-md border-2 border-ink bg-accent-tertiary/30" />
-               <div className="flex-1">
-                 <h3 className="text-sm font-bold leading-tight">Frieren: Beyond Journey's End</h3>
-                 <div className="flex items-center gap-2 mt-2">
-                   <div className="h-2 flex-1 rounded-full bg-ink/10 overflow-hidden border border-ink/20">
-                     <div className="h-full bg-ink w-[60%]" />
-                   </div>
-                   <span className="text-[10px] font-black text-ink-muted">12 / 28</span>
-                 </div>
-               </div>
-             </div>
-             {/* Mock Entry 2 */}
-             <div className="flex gap-4 items-center">
-               <div className="h-16 w-12 shrink-0 rounded-md border-2 border-ink bg-accent-secondary/30" />
-               <div className="flex-1">
-                 <h3 className="text-sm font-bold leading-tight">Jujutsu Kaisen</h3>
-                 <div className="flex items-center gap-2 mt-2">
-                   <div className="h-2 flex-1 rounded-full bg-ink/10 overflow-hidden border border-ink/20">
-                     <div className="h-full bg-ink w-[25%]" />
-                   </div>
-                   <span className="text-[10px] font-black text-ink-muted">6 / 24</span>
-                 </div>
-               </div>
-             </div>
-           </div>
-        </div>
-      </section>
 
-      {/* Section 2: Discovery & Community Split */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 rounded-2xl border-2 border-ink bg-ink p-8 text-paper shadow-[6px_6px_0_0_var(--accent-primary)] flex flex-col justify-between min-h-[300px]">
-          <div>
-             <h2 className="text-3xl font-black text-paper mb-4">Real discussions.<br/>No echo chambers.</h2>
-             <p className="text-sm font-medium text-paper/70 max-w-md leading-relaxed">
-               Join threaded conversations about the latest episodes, controversial endings, and hidden gems. Spoilers are automatically hidden based on your progress.
-             </p>
+        <div className="shelf-preview rounded-[22px] border border-border-soft bg-paper-raised p-4 shadow-[var(--shadow-soft)] sm:p-6">
+          <div className="mb-4 flex items-center justify-between border-b border-border-soft pb-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-ink">Currently watching</p>
+              <p className="mt-1 text-xs text-ink-muted">Sample shelf preview</p>
+            </div>
+            <span className="rounded-full bg-accent-primary/25 px-3 py-1 text-xs font-bold text-ink">3 active</span>
           </div>
-          <div className="mt-8 flex items-center gap-4">
-            <button className="rounded-xl border-2 border-paper bg-paper px-5 py-2.5 text-sm font-black text-ink transition-transform hover:-translate-y-0.5 shadow-[2px_2px_0_0_var(--accent-primary)]">
-              Browse Community
-            </button>
-          </div>
-        </div>
 
-        <div className="rounded-2xl border-2 border-ink bg-accent-primary p-8 shadow-[6px_6px_0_0_var(--ink)] flex flex-col justify-between min-h-[300px]">
-          <div>
-             <h2 className="text-2xl font-black text-ink mb-3">Visual Discovery</h2>
-             <p className="text-sm font-medium text-ink/80 leading-relaxed">
-               Find your next watch through genre clusters, studio spotlights, and what your friends are loving.
-             </p>
-          </div>
-          <div className="flex -space-x-4 mt-8">
-             {/* Mock stacked covers */}
-             <div className="h-16 w-12 rounded-md border-2 border-ink bg-paper-raised shadow-sm rotate-[-6deg]" />
-             <div className="h-16 w-12 rounded-md border-2 border-ink bg-paper-raised shadow-sm rotate-[4deg] z-10" />
-             <div className="h-16 w-12 rounded-md border-2 border-ink bg-paper-raised shadow-sm rotate-[-2deg] z-20" />
+          <div className="flex flex-col gap-3">
+            {shelfPicks.map((anime, index) => {
+              const title = anime.title.english ?? anime.title.romaji ?? "Anime pick";
+              const totalEpisodes = anime.episodes ?? 24;
+              const currentEpisode = Math.max(1, Math.ceil(totalEpisodes * (index === 0 ? 0.43 : index === 1 ? 0.25 : 0.68)));
+              const progress = Math.min(100, Math.round((currentEpisode / totalEpisodes) * 100));
+
+              return (
+                <article key={anime.id} className="shelf-row flex items-center gap-3 rounded-xl p-2.5 sm:gap-4 sm:p-3">
+                  <div className="relative h-[68px] w-12 shrink-0 overflow-hidden rounded-lg bg-paper-elevated">
+                    {anime.coverImage.large && <Image src={anime.coverImage.large} alt={`${title} cover`} fill sizes="48px" className="object-cover" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <h3 className="max-w-full truncate text-sm font-bold text-ink">{title}</h3>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-ink-muted"><Clock3 size={11} /> Watching</span>
+                    </div>
+                    <div className="mt-3 flex items-center gap-3">
+                      <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-paper-elevated">
+                        <div className="h-full rounded-full bg-accent-secondary" style={{ width: `${progress}%` }} />
+                      </div>
+                      <span className="shrink-0 text-[10px] font-semibold tabular-nums text-ink-muted">{currentEpisode} / {totalEpisodes}</span>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+            {shelfPicks.length === 0 && <p className="py-6 text-sm text-ink-muted">Anime cover previews will return when AniList is available.</p>}
           </div>
         </div>
       </section>
 
+      <section className="community-preview grid grid-cols-1 items-center gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-16" aria-labelledby="conversation-preview-title">
+        <div className="community-note rounded-[22px] p-6 sm:p-9">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-muted">Conversation starter</p>
+          <h2 id="conversation-preview-title" className="mt-3 max-w-xl text-3xl font-black leading-tight text-ink sm:text-4xl">
+            The best part is having someone to talk about it with.
+          </h2>
+          <p className="mt-4 max-w-lg text-sm leading-relaxed text-ink-soft sm:text-base">
+            Bring your theories, favorite scenes, and wildly specific character rankings. Maviri gives every anime its own place in the conversation.
+          </p>
+          <Link href="/discover" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 text-sm font-bold text-paper transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-accent-primary">
+            Find something to watch <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <div className="conversation-art" role="group" aria-label="Trending anime artwork">
+          {conversationPicks.slice(0, 4).map((anime, index) => {
+            const title = anime.title.english ?? anime.title.romaji ?? "Anime pick";
+            return (
+              <a key={anime.id} href={`https://anilist.co/anime/${anime.id}`} target="_blank" rel="noreferrer noopener" className={`conversation-poster poster-${index + 1}`} aria-label={`Explore ${title} on AniList`}>
+                {anime.coverImage.large && <Image src={anime.coverImage.large} alt="" fill sizes="(max-width: 640px) 25vw, 120px" className="object-cover" />}
+                <span>{title}</span>
+              </a>
+            );
+          })}
+          {conversationPicks.length === 0 && <p className="text-sm text-ink-muted">Trending artwork will return when AniList is available.</p>}
+        </div>
+      </section>
     </div>
   );
 }

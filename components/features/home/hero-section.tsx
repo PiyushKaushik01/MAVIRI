@@ -1,154 +1,146 @@
 import Image from "next/image";
-import { MessageCircle, Heart, Repeat2, Play } from "lucide-react";
+import { ArrowUpRight, MessageCircle, Sparkles, Users } from "lucide-react";
 import { getFeaturedPayload } from "@/lib/anime-service";
 import type { AnimeMedia } from "@/lib/anilist";
 
 export async function HeroSection() {
   let seasonal: AnimeMedia[] = [];
   let trending: AnimeMedia[] = [];
-  let failed = false;
 
   try {
     const payload = await getFeaturedPayload();
     seasonal = payload.seasonal;
     trending = payload.trending;
-  } catch (err) {
-    console.error("[HeroSection] AniList fetch failed:", err);
-    failed = true;
+  } catch (error) {
+    console.error("[HeroSection] AniList fetch failed:", error);
   }
 
-  if (failed || seasonal.length < 3 || trending.length < 3) {
+  if (seasonal.length < 3 || trending.length < 3) {
     return (
-      <section className="mt-10 rounded-2xl border-2 border-ink bg-paper-raised p-10 text-center shadow-[4px_4px_0_0_var(--ink)]">
+      <section className="mt-10 rounded-2xl border border-border-soft bg-paper-raised p-8 text-center shadow-[var(--shadow-soft)] sm:p-10">
         <p className="text-sm font-medium text-ink-soft">
-          The community is currently offline. Please refresh.
+          Anime picks are taking a breather. Try again in a little while.
         </p>
       </section>
     );
   }
 
-  const featured = seasonal[0];
-  const postAnime = trending[0];
-  const threadAnime = trending[1];
+  const featured = trending[0];
+  const episodeAnime = seasonal[0];
+  const discussionAnime = trending[1];
+  const featuredTitle = featured.title.english ?? featured.title.romaji ?? "Trending anime";
+  const episodeTitle = episodeAnime.title.english ?? episodeAnime.title.romaji ?? "Seasonal pick";
+  const discussionTitle = discussionAnime.title.english ?? discussionAnime.title.romaji ?? "Anime pick";
 
   return (
-    <section className="relative mt-8 md:mt-12 grid grid-cols-1 gap-6 md:grid-cols-12 lg:gap-8">
-      
-      {/* Zone 1: The Welcome & Featured Anime (Left, spans 4 cols) */}
-      <div className="md:col-span-4 flex flex-col gap-6">
+    <section className="home-hero relative mt-8 grid grid-cols-1 gap-6 md:mt-10 md:grid-cols-12 lg:gap-8">
+      <div className="flex flex-col gap-6 md:col-span-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-ink sm:text-4xl">
-            Welcome to <span className="text-accent-primary drop-shadow-[2px_2px_0_var(--ink)]">Maviri</span>.
-          </h1>
-          <p className="mt-3 text-sm font-medium text-ink-soft leading-relaxed">
-            The social layer for your anime obsession. Track what you watch, discover your next favourite, and talk about it with people who get it.
+          <p className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-ink-muted">
+            <Sparkles size={14} className="text-accent-primary" /> A little corner for anime people
           </p>
+          <h1 className="text-3xl font-black tracking-tight text-ink sm:text-4xl">
+            Welcome to <span className="text-accent-primary">Maviri</span>.
+          </h1>
+          <p className="mt-3 max-w-prose text-sm font-medium leading-relaxed text-ink-soft">
+            Find your next series, keep your watch progress, and trade episode thoughts with fans who care about the same details you do.
+          </p>
+          <div className="home-stamps" aria-label="What you can do on Maviri">
+            <span className="home-stamp"><Sparkles className="h-3.5 w-3.5" /> Discover anime</span>
+            <span className="home-stamp"><Users className="h-3.5 w-3.5" /> Find your people</span>
+          </div>
         </div>
 
-        <article className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-ink bg-paper shadow-[6px_6px_0_0_var(--ink)] transition-transform duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_0_var(--ink)] mt-2">
+        <a href={`https://anilist.co/anime/${featured.id}`} target="_blank" rel="noreferrer noopener" aria-label={`Explore ${featuredTitle} on AniList`} className="home-featured-card group relative mt-1 block overflow-hidden rounded-[22px] border border-border-soft bg-paper-raised text-left no-underline shadow-[var(--shadow-soft)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-primary">
           <div className="relative aspect-[3/4] w-full overflow-hidden bg-paper-elevated">
-            <Image
-              src={featured.coverImage.extraLarge || featured.coverImage.large!}
-              alt=""
-              fill
-              priority
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
-            <div className="absolute inset-x-0 bottom-0 p-5">
-              <span className="mb-2 inline-block rounded-md bg-accent-primary px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-ink">
-                Trending #1
+            {featured.coverImage.extraLarge || featured.coverImage.large ? (
+              <Image
+                src={featured.coverImage.extraLarge ?? featured.coverImage.large!}
+                alt={`${featuredTitle} cover artwork`}
+                fill
+                preload
+                sizes="(max-width: 767px) 100vw, 34vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+              />
+            ) : null}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/5 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] backdrop-blur-sm">
+                Trending now <ArrowUpRight size={12} />
               </span>
-              <h2 className="text-2xl font-bold leading-tight text-white">
-                {featured.title.english ?? featured.title.romaji}
-              </h2>
-              <p className="text-sm font-medium text-white/80 mt-1">
+              <h2 className="text-2xl font-bold leading-tight sm:text-3xl">{featuredTitle}</h2>
+              <p className="mt-2 text-sm font-medium text-white/80">
                 {featured.genres.slice(0, 2).join(" · ")}
+                {featured.seasonYear ? ` · ${featured.seasonYear}` : ""}
               </p>
             </div>
           </div>
-        </article>
+        </a>
       </div>
 
-      {/* Zone 2: The Social Posts (Right, spans 8 cols) */}
-      <div className="md:col-span-8 flex flex-col gap-6">
-        
-        {/* Post Type 1: Instagram-style Media Post */}
-        <article className="rounded-2xl border-2 border-ink bg-paper-raised p-4 shadow-[4px_4px_0_0_var(--ink)]">
-          <div className="flex items-center gap-3 mb-3">
-            {/* Mock Avatar using a character image */}
-            <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-ink bg-accent-secondary">
-              <Image src={threadAnime.coverImage.large!} alt="User" fill className="object-cover" />
+      <div className="flex flex-col gap-5 md:col-span-8">
+        <article className="home-social-post overflow-hidden rounded-[22px] border border-border-soft bg-paper-raised p-4 shadow-[var(--shadow-soft)] sm:p-5">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-accent-primary/20 text-accent-primary">
+              <Sparkles size={18} />
             </div>
-            <div>
-              <p className="text-sm font-bold text-ink leading-none">@kaush</p>
-              <p className="text-xs font-medium text-ink-muted mt-1">Watching {postAnime.title.romaji}</p>
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-ink-muted">Seasonal spotlight</p>
+              <p className="mt-1 truncate text-sm font-bold text-ink">{episodeTitle}</p>
             </div>
+            {episodeAnime.status === "RELEASING" && (
+              <span className="ml-auto shrink-0 rounded-full bg-accent-secondary/20 px-2.5 py-1 text-[10px] font-bold text-ink-soft">Airing</span>
+            )}
           </div>
-          
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border-2 border-ink bg-paper-elevated">
-             <Image src={postAnime.bannerImage || postAnime.coverImage.extraLarge!} alt="Post content" fill className="object-cover" />
-             <div className="absolute top-3 right-3 rounded-md bg-black/60 px-2 py-1 backdrop-blur-md">
-               <span className="text-xs font-bold text-white">EP 8 / 12</span>
-             </div>
+
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-paper-elevated">
+            {episodeAnime.bannerImage || episodeAnime.coverImage.extraLarge || episodeAnime.coverImage.large ? (
+              <Image
+                src={episodeAnime.bannerImage ?? episodeAnime.coverImage.extraLarge ?? episodeAnime.coverImage.large!}
+                alt={`${episodeTitle} artwork`}
+                fill
+                sizes="(max-width: 767px) 100vw, 66vw"
+                className="object-cover transition-transform duration-700 hover:scale-[1.025]"
+              />
+            ) : null}
+            {episodeAnime.episodes && (
+              <span className="absolute bottom-3 right-3 rounded-full bg-black/65 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+                {episodeAnime.episodes} episodes
+              </span>
+            )}
           </div>
-          
-          <p className="mt-3 text-sm font-medium text-ink line-clamp-2">
-            The animation in this episode was absolutely insane. Studio MAPPA never misses. The fight choreography is on another level. 🍿🔥
-          </p>
-          
-          <div className="mt-4 flex items-center gap-6 border-t-2 border-ink/10 pt-3">
-            <button className="flex items-center gap-1.5 text-ink-soft hover:text-accent-primary transition-colors">
-              <Heart className="h-4 w-4" /> <span className="text-xs font-bold">1.2k</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-ink-soft hover:text-accent-secondary transition-colors">
-              <MessageCircle className="h-4 w-4" /> <span className="text-xs font-bold">84</span>
-            </button>
+
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-medium text-ink-soft">
+              {episodeAnime.genres.slice(0, 3).join(" · ") || "A new seasonal pick"}
+            </p>
+            <a className="inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-ink hover:text-ink-muted" href={`https://anilist.co/anime/${episodeAnime.id}`} target="_blank" rel="noreferrer noopener">
+              Show details <ArrowUpRight size={15} />
+            </a>
           </div>
         </article>
 
-        {/* Post Type 2: Twitter/X-style Discussion */}
-        <article className="rounded-2xl border-2 border-ink bg-paper p-5 shadow-[4px_4px_0_0_var(--ink)] relative overflow-hidden">
-          {/* Decorative background accent */}
-          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-accent-tertiary/20 blur-2xl" />
-          
-          <div className="flex gap-3">
-             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-ink bg-accent-tertiary">
-              <Image src={seasonal[1].coverImage.large!} alt="User" fill className="object-cover" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-bold text-ink">@anime_critic</p>
-                <span className="text-xs font-medium text-ink-muted">· 2h</span>
-              </div>
-              <p className="text-sm font-medium text-ink mt-1 mb-3">
-                Unpopular opinion: The pacing in the first half was actually necessary for the world-building. If they rushed it, we wouldn't care about the stakes in season 2. You guys just have TikTok attention spans. 🤷‍♂️
-              </p>
-              
-              {/* Embedded Anime Card inside text post */}
-              <div className="flex items-center gap-3 rounded-xl border-2 border-ink bg-paper-raised p-2 transition-colors hover:bg-paper-elevated cursor-pointer">
-                <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md border border-ink">
-                  <Image src={threadAnime.coverImage.large!} alt="Anime" fill className="object-cover" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-ink leading-tight line-clamp-1">{threadAnime.title.english ?? threadAnime.title.romaji}</p>
-                  <p className="text-[10px] font-medium text-ink-soft mt-0.5">Action · Drama · 2024</p>
-                </div>
-              </div>
-
-              <div className="mt-3 flex items-center gap-6">
-                <button className="flex items-center gap-1.5 text-ink-soft hover:text-accent-secondary transition-colors">
-                  <MessageCircle className="h-4 w-4" /> <span className="text-xs font-bold">402</span>
-                </button>
-                <button className="flex items-center gap-1.5 text-ink-soft hover:text-accent-primary transition-colors">
-                  <Repeat2 className="h-4 w-4" /> <span className="text-xs font-bold">1.5k</span>
-                </button>
-              </div>
-            </div>
-          </div>
+        <article className="relative overflow-hidden rounded-[22px] border border-border-soft bg-paper-raised p-5 sm:p-6">
+          <div className="absolute right-5 top-5 text-accent-tertiary/70" aria-hidden="true"><MessageCircle size={22} /></div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-ink-muted">A conversation starter</p>
+          <h2 className="mt-3 max-w-2xl text-xl font-bold leading-snug text-ink sm:text-2xl">
+            What makes a slow-burn story worth sticking with?
+          </h2>
+          <a className="mt-5 flex min-h-16 items-center gap-3 rounded-xl bg-paper-elevated/70 p-3 transition-colors hover:bg-paper-elevated" href={`https://anilist.co/anime/${discussionAnime.id}`} target="_blank" rel="noreferrer noopener">
+            {discussionAnime.coverImage.large && (
+              <span className="relative h-12 w-9 shrink-0 overflow-hidden rounded-md bg-paper-elevated">
+                <Image src={discussionAnime.coverImage.large} alt="" fill sizes="36px" className="object-cover" />
+              </span>
+            )}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold text-ink">Try the question with {discussionTitle}</span>
+              <span className="mt-1 block text-xs text-ink-muted">{discussionAnime.genres.slice(0, 2).join(" · ")}</span>
+            </span>
+            <ArrowUpRight size={16} className="shrink-0 text-ink-muted" />
+          </a>
+          <p className="mt-3 text-xs text-ink-muted">A prompt for your next anime night, ready whenever the conversation is.</p>
         </article>
-
       </div>
     </section>
   );
-} 
+}
